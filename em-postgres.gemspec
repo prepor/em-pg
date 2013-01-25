@@ -25,6 +25,12 @@ spec = Gem::Specification.new do |s|
 end
   # = MANIFEST =
   s.files = %w[
-
+    Gemfile
+    Gemfile.lock
+    Rakefile
+    em-postgres.gemspec
+    lib/em-postgres.rb
+    spec/postgres_spec.rb
+    spec/spec_helper.rb
   ]
   # = MANIFEST =
