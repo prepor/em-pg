@@ -4,7 +4,7 @@ require 'logger'
 
 module EM
   class PG
-    VERSION = '0.1.0'
+    VERSION = '0.1.1'
     include EM::Deferrable
 
     class Error < RuntimeError
@@ -64,7 +64,7 @@ module EM
     attr_accessor :pg, :conn, :opts, :state, :logger, :watcher, :on_disconnect
     def initialize(opts)
       opts = opts.dup
-      @logger = opts.delete(:logger) || EM::Postgres.logger
+      @logger = opts.delete(:logger) || EM::PG.logger
       @on_disconnect = opts.delete(:on_disconnect)
       @opts = opts
       @state = :connecting
