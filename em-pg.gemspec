@@ -1,7 +1,7 @@
 spec = Gem::Specification.new do |s|
-  s.name = 'em-postgres'
+  s.name = 'em-pg'
   s.version = '0.1.0'
-  s.date = '2013-01-25'
+  s.date = '2013-01-28'
   s.summary = 'Async PostgreSQL client API for Ruby/EventMachine'
   s.email = "ceo@prepor.ru"
   s.homepage = "http://github.com/prepor/em-postgres"
@@ -11,26 +11,16 @@ spec = Gem::Specification.new do |s|
   s.add_dependency('eventmachine', '>= 0.12')
   s.add_dependency('pg', '>= 0.14')
 
-  # git ls-files
-  s.files = %w[
-    README
-    Rakefile
-    em-postgres.gemspec
-    lib/em-postgres/postgres.rb
-    lib/em-postgres/connection.rb
-    lib/em-postgres.rb
-    spec/helper.rb
-    spec/postgres_spec.rb
-  ]
-end
   # = MANIFEST =
   s.files = %w[
     Gemfile
     Gemfile.lock
+    README.md
     Rakefile
-    em-postgres.gemspec
-    lib/em-postgres.rb
-    spec/postgres_spec.rb
+    em-pg.gemspec
+    lib/em/pg.rb
+    spec/em/pg_spec.rb
     spec/spec_helper.rb
   ]
   # = MANIFEST =
+end

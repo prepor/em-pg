@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    em-postgres (0.0.1)
+    em-pg (0.1.0)
       eventmachine (>= 0.12)
       pg (>= 0.14)
 
@@ -21,6 +21,8 @@ GEM
     eventmachine (1.0.0)
     hashie (1.2.0)
     minitest (4.1.0)
+    minitest-em-sync (0.1.0)
+      eventmachine (>= 0.12)
     minitest-reporters (0.12.0)
       ansi
       builder
@@ -36,6 +38,7 @@ PLATFORMS
 
 DEPENDENCIES
   debugger
-  em-postgres!
+  em-pg!
   minitest
+  minitest-em-sync
   minitest-reporters

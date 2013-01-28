@@ -3,7 +3,7 @@ require 'pg'
 require 'logger'
 
 module EM
-  class Postgres
+  class PG
     VERSION = '0.1.0'
     include EM::Deferrable
 
@@ -21,7 +21,7 @@ module EM
     end
     class UnexpectedStateError < Error; end
     class BadConnectionStatusError < UnexpectedStateError; end
-    class BadPollStatsError < UnexpectedStateError; end
+    class BadPollStatusError < UnexpectedStateError; end
     class PGError < Error
       attr_accessor :original
     end
@@ -56,15 +56,20 @@ module EM
       end
     end
 
+    class << self
+      attr_accessor :logger
+    end
+    self.logger = Logger.new(STDOUT)
+
     attr_accessor :pg, :conn, :opts, :state, :logger, :watcher, :on_disconnect
     def initialize(opts)
       opts = opts.dup
-      @logger = opts.delete(:logger) || Logger.new(STDOUT)
+      @logger = opts.delete(:logger) || EM::Postgres.logger
       @on_disconnect = opts.delete(:on_disconnect)
       @opts = opts
       @state = :connecting
 
-      @pg = PG::Connection.connect_start(@opts)
+      @pg = ::PG::Connection.connect_start(@opts)
       @queue = []
 
       @watcher = EM.watch(@pg.socket, Watcher, self)
@@ -77,11 +82,11 @@ module EM
       when :connecting
         check_connect
       when :waiting
-        get_result do |res|
+        consume_result do |res|
           result_for_query res
         end
       else # try check result, may be it close-message
-        get_result do |res|
+        consume_result do |res|
           if res.is_a? Exception
             unbind res
           else
@@ -94,18 +99,18 @@ module EM
     def check_connect
       status = @pg.connect_poll
       case status
-      when PG::PGRES_POLLING_OK
-        if pg.status == PG::CONNECTION_OK
+      when ::PG::PGRES_POLLING_OK
+        if pg.status == ::PG::CONNECTION_OK
           connected
-        elsif pg.status == PG::CONNECTION_BAD
+        elsif pg.status == ::PG::CONNECTION_BAD
           connection_refused
         else
           raise BadConnectionStatusError.new
         end
-      when PG::PGRES_POLLING_READING
-      when PG::PGRES_POLLING_WRITING
+      when ::PG::PGRES_POLLING_READING
+      when ::PG::PGRES_POLLING_WRITING
         @watcher.notify_writable = true
-      when PG::PGRES_POLLING_FAILED
+      when ::PG::PGRES_POLLING_FAILED
         @watcher.detach
         connection_refused
       else
@@ -113,13 +118,13 @@ module EM
       end
     end
 
-    [:send_query, :send_query_prepared, :send_describe_prepared, :send_describe_portal].each do |m|
+    [:send_query, :send_prepare, :send_query_prepared, :send_describe_prepared, :send_describe_portal].each do |m|
       define_method(m) do |*args|
-        async_exec(m, *args)
+        make_query(m, *args)
       end
     end
 
-    def async_exec(m, *args)
+    def make_query(m, *args)
       q = Query.new m, args
       case @state
       when :waiting
@@ -139,7 +144,7 @@ module EM
     def run_query!(q)
       @current_query = q
       @state = :waiting
-      debug(["EM::Postgres", q.method, q.args])
+      debug(["EM::PG", q.method, q.args])
       @pg.send(q.method, *q.args)
     end
 
@@ -150,14 +155,14 @@ module EM
       end
     end
 
-    def get_result(&clb)
+    def consume_result(&clb)
       begin
         @pg.consume_input # can raise exceptins
         if @pg.is_busy
         else
           clb.call @pg.get_last_result # can raise exceptions
         end
-      rescue PG::Error => e
+      rescue ::PG::Error => e
         clb.call PGError.new(original: e)
       end
     end
