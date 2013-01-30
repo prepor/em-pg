@@ -1,7 +1,7 @@
 spec = Gem::Specification.new do |s|
   s.name = 'em-pg'
-  s.version = '0.1.1'
-  s.date = '2013-01-28'
+  s.version = '0.1.2'
+  s.date = '2013-01-30'
   s.summary = 'Async PostgreSQL client API for Ruby/EventMachine'
   s.email = "ceo@prepor.ru"
   s.homepage = "http://github.com/prepor/em-postgres"

@@ -4,7 +4,7 @@ require 'logger'
 
 module EM
   class PG
-    VERSION = '0.1.1'
+    VERSION = '0.1.2'
     include EM::Deferrable
 
     class Error < RuntimeError
@@ -24,6 +24,10 @@ module EM
     class BadPollStatusError < UnexpectedStateError; end
     class PGError < Error
       attr_accessor :original
+
+      def to_s
+        original.to_s
+      end
     end
 
     class Watcher < EM::Connection
