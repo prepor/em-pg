@@ -9,7 +9,8 @@ Features
 * Fully async including connect and right usage of #busy and #consume_input;
 * All results are standard deferrable objects;
 * Distinct exceptions hierarchy;
-* Wrapper for [Green](https://github.com/prepor/green) and adapter fot [Sequel](http://sequel.rubyforge.org/).
+* Wrapper for [Green](https://github.com/prepor/green) and adapter fot [Sequel](http://sequel.rubyforge.org/) — [prepor/green-em-pg](https://github.com/prepor/green-em-pg);
+* Wrapper for EM-Synhrony — [fl00r/sync-em-pg](https://github.com/fl00r/sync-em-pg).
 
 Usage
 -----
